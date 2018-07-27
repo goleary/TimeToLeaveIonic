@@ -7,8 +7,10 @@
 </ion-header>
 
 <ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+  From: {{fromDescription}}
+  <google-places-autocomplete (callback)="setFrom($event[0])" key="AIzaSyAGMbMlG34NX1WuXa1PvuPe8HBplBQhfd4"></google-places-autocomplete>
+  Destination: {{destinationDescription}}
+  <google-places-autocomplete (callback)="setDestination($event[0])" key="AIzaSyAGMbMlG34NX1WuXa1PvuPe8HBplBQhfd4"></google-places-autocomplete>
+
+  <button ion-button [disabled]="isButtonDisabled()" (click)="getTraffic()">Get Traffic</button>
 </ion-content>
