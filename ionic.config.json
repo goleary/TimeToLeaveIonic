@@ -1,0 +1,7 @@
+{
+  "name": "TimeToLeave",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
