@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import 'rxjs/add/operator/do'
+  ;
 import { TrafficProvider } from '../../providers/traffic/traffic';
+import { MonitorProvider } from '../../providers/monitor/monitor';
+import { Subscription } from 'rxjs/Subscription';
+import { UtilProvider } from '../../providers/util/util';
 
 @Component({
   selector: 'page-home',
@@ -8,11 +13,26 @@ import { TrafficProvider } from '../../providers/traffic/traffic';
 })
 
 export class HomePage {
-  from = null;
+  origin = null;
   destination = null;
+
+  trafficResult = null;
+
+  currentDriveTime = null;
+  optimalDriveTime = null;
+
+  trafficMonitor: Subscription = null;
+
+  driveTimes: {
+    time: Date,
+    duration: number
+  }[] = [];
+
   constructor(
     public navCtrl: NavController,
-    private trafficProvider: TrafficProvider
+    private trafficProvider: TrafficProvider,
+    private monitorProvider: MonitorProvider,
+    private utilProvider: UtilProvider
   ) {
 
   }
@@ -20,26 +40,53 @@ export class HomePage {
     console.log(event);
   }
 
-  setFrom(event) {
-    this.from = event;
+  setOrigin(event) {
+    this.origin = event;
   }
   setDestination(event) {
     this.destination = event;
   }
 
-  get fromDescription() {
-    return this.from !== null ? this.from.description : "";
+  get originDescription() {
+    return this.origin !== null ? this.origin.description : "";
   }
   get destinationDescription() {
     return this.destination !== null ? this.destination.description : "";
   }
 
-  isButtonDisabled() {
-    return this.from === null || this.destination === null;
+  get isTrafficButtonDisabled() {
+    return this.origin === null || this.destination === null;
+  }
+  get isTrackingButtonDisabled() {
+    return this.trafficMonitor === null || this.trafficMonitor.closed;
   }
 
+  get showTrafficInfo() {
+    return this.trafficResult !== null;
+  }
+
+  storeDataFromResult(result) {
+    this.optimalDriveTime = this.utilProvider.getOptimalDriveTimeFromResult(result);
+
+    this.driveTimes.push(this.utilProvider.getCurrentDriveTimeFromResult(result));
+    this.trafficResult = result;
+  }
   getTraffic() {
-    this.trafficProvider.getInfo(this.from.description, this.destination.description)
-      .subscribe(result => console.log(result));
+    this.trafficProvider.getInfo(this.origin.description, this.destination.description)
+      .do(result => console.log(result))
+      .subscribe(result => this.storeDataFromResult(result));
+  }
+
+  startTracking() {
+    this.trafficMonitor = this.monitorProvider.startTrackingTraffic(this.origin.description, this.destination.description).subscribe(result => {
+      console.log('latest traffic info: ', result);
+    })
+  }
+
+  stopTracking() {
+    this.trafficMonitor.unsubscribe();
+  }
+  get showTrackingInfo() {
+    return this.trafficMonitor !== null;
   }
 }

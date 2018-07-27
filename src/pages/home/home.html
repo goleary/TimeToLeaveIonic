@@ -7,10 +7,23 @@
 </ion-header>
 
 <ion-content padding>
-  From: {{fromDescription}}
-  <google-places-autocomplete (callback)="setFrom($event[0])" key="AIzaSyAGMbMlG34NX1WuXa1PvuPe8HBplBQhfd4"></google-places-autocomplete>
+  From: {{originDescription}}
+  <google-places-autocomplete (callback)="setOrigin($event[0])" key="AIzaSyAGMbMlG34NX1WuXa1PvuPe8HBplBQhfd4"></google-places-autocomplete>
   Destination: {{destinationDescription}}
   <google-places-autocomplete (callback)="setDestination($event[0])" key="AIzaSyAGMbMlG34NX1WuXa1PvuPe8HBplBQhfd4"></google-places-autocomplete>
 
-  <button ion-button [disabled]="isButtonDisabled()" (click)="getTraffic()">Get Traffic</button>
+  <button ion-button [disabled]="isTrafficButtonDisabled" (click)="getTraffic()">Get Traffic</button>
+  <div *ngIf="showTrafficInfo">
+    <h3>Original Traffic Results</h3>
+    <p>Current drive time: {{driveTimes[0].text}}</p>
+    <p>Optimal drive time: {{optimalDriveTime.text}}</p>
+    <!--<p>Wasted time:</p>-->
+    <button ion-button (click)="startTracking()">Start Tracking</button>
+    <button ion-button color="danger" [disabled]="isTrackingButtonDisabled" (click)="stopTracking()">Stop Tracking</button>
+  </div>
+  <div *ngIf="showTrackingInfo">
+    <h3>Tracking Results</h3>
+    <p>Current drive time: {{driveTimes[driveTimes.length -1].text}}</p>
+    <!--<button ion-button color="danger" (click)="stopTracking()">Stop Tracking</button>-->
+  </div>
 </ion-content>

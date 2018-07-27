@@ -5,12 +5,16 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
 import { GooglePlacesAutocompleteComponentModule } from 'ionic2-google-places-autocomplete';
+import { PhonegapLocalNotification } from '@ionic-native/phonegap-local-notification';
 
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { TrafficProvider } from '../providers/traffic/traffic';
 import { HttpClientModule } from '@angular/common/http';
+import { MonitorProvider } from '../providers/monitor/monitor';
+import { NotifyProvider } from '../providers/notify/notify';
+import { UtilProvider } from '../providers/util/util';
 
 @NgModule({
   declarations: [
@@ -32,7 +36,11 @@ import { HttpClientModule } from '@angular/common/http';
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    TrafficProvider
+    TrafficProvider,
+    MonitorProvider,
+    NotifyProvider,
+    PhonegapLocalNotification,
+    UtilProvider
   ]
 })
 export class AppModule { }
