@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { TrafficProvider } from '../traffic/traffic';
 import { UtilProvider } from '../util/util';
 import { NotifyProvider } from '../notify/notify';
@@ -14,7 +14,9 @@ import { NotifyProvider } from '../notify/notify';
 @Injectable()
 export class MonitorProvider {
 
-  THRESHOLD: number = 0.2;
+  THRESHOLD: number = 1;
+
+  monitorSubscription: Subscription;
 
   constructor(
     public http: HttpClient,
@@ -26,9 +28,10 @@ export class MonitorProvider {
   }
 
   startTrackingTraffic(origin, destination) {
-    return Observable.interval(1 * 15 * 1000)
+    this.monitorSubscription = Observable.interval(1 * 15 * 1000)
       .flatMap(() => this.trafficService.getInfo(origin, destination))
-      .do(result => this.serveNotificationIfTrafficGone(result));
+      .subscribe(result => this.serveNotificationIfTrafficGone(result));
+    return this.monitorSubscription;
   }
 
   checkIfTrafficBelowThreshold(trafficData) {
@@ -39,8 +42,13 @@ export class MonitorProvider {
 
   serveNotificationIfTrafficGone(result) {
     if (this.checkIfTrafficBelowThreshold(result)) {
+      this.unsubscribeMonitor();
       this.notifyService.notifyTrafficGone();
     }
+  }
+  unsubscribeMonitor() {
+    console.log('unsubscribeMonitor');
+    this.monitorSubscription.unsubscribe();
   }
 
 }

@@ -78,13 +78,11 @@ export class HomePage {
   }
 
   startTracking() {
-    this.trafficMonitor = this.monitorProvider.startTrackingTraffic(this.origin.description, this.destination.description).subscribe(result => {
-      console.log('latest traffic info: ', result);
-    })
+    this.monitorProvider.startTrackingTraffic(this.origin.description, this.destination.description);
   }
 
   stopTracking() {
-    this.trafficMonitor.unsubscribe();
+    this.monitorProvider.unsubscribeMonitor();
   }
   get showTrackingInfo() {
     return this.trafficMonitor !== null;
